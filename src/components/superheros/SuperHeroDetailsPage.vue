@@ -8,37 +8,57 @@
       <img :src="bioInfo.images.lg" class="" :alt="bioInfo.name" />
     </div>
     <div class="p-8">
-      <p class="text-center font-bold text-5xl">{{ bioInfo.name }}</p>
+      <p class="text-center font-bold text-5xl text-red-500">
+        {{ bioInfo.name }}
+      </p>
       <p class="text-center text-lg">{{ bioInfo.work.occupation }}</p>
 
-      <p class="mt-4 mb-2 font-bold text-lg">Appearance</p>
-      <p>Race: {{ bioInfo.appearance.race }}</p>
-      <p>Gender: {{ bioInfo.appearance.gender }}</p>
-      <p>Eye color: {{ bioInfo.appearance.eyeColor }}</p>
-      <p>Hair color: {{ bioInfo.appearance.hairColor }}</p>
-      <p>
-        Height: {{ bioInfo.appearance.height[0] }} / ({{
+      <p class="mt-4 mb-2 font-bold text-xl text-green-600">Appearance</p>
+      <p class="inline font-bold">Race:</p>
+      <p class="inline">{{ " " + bioInfo.appearance.race }}</p>
+      <br />
+      <p class="inline font-bold">Gender:</p>
+      <p class="inline">{{ " " + bioInfo.appearance.gender }}</p>
+      <br />
+      <p class="inline font-bold">Eye color:</p>
+      <p class="inline">{{ " " + bioInfo.appearance.eyeColor }}</p>
+      <br />
+      <p class="inline font-bold">Hair color:</p>
+      <p class="inline">{{ " " + bioInfo.appearance.hairColor }}</p>
+      <br />
+      <p class="inline font-bold">Height:</p>
+      <p class="inline">
+        {{ " " + bioInfo.appearance.height[0] }} / ({{
           bioInfo.appearance.height[1]
         }})
       </p>
-      <p>
-        Weight: {{ bioInfo.appearance.weight[0] }} / ({{
+      <br />
+      <p class="inline font-bold">Weight:</p>
+      <p class="inline">
+        {{ bioInfo.appearance.weight[0] }} / ({{
           bioInfo.appearance.weight[1]
         }})
       </p>
 
-      <p class="mt-4 mb-2 font-bold text-lg">Biographical Information</p>
-      <p>Full name: {{ bioInfo.biography.fullName }}</p>
+      <p class="mt-4 mb-2 font-bold text-xl text-green-600">
+        Biographical Information
+      </p>
+      <p class="inline font-bold">Full name:</p>
+      <p class="inline">{{ " " + bioInfo.biography.fullName }}</p>
+      <br />
       <span>
-        <p>Aliases:</p>
+        <p class="inline font-bold">Aliases:</p>
         <p v-for="alias in bioInfo.biography.aliases" :key="alias" class="ml-2">
           {{ alias }}
         </p>
       </span>
-      <p>Alter egos: {{ bioInfo.biography.alterEgos }}</p>
-      <p>First appearance: {{ bioInfo.biography.firstAppearance }}</p>
+      <p class="inline font-bold">Alter egos:</p>
+      <p class="inline">{{ " " + bioInfo.biography.alterEgos }}</p>
+      <br />
+      <p class="inline font-bold">First appearance:</p>
+      <p class="inline">{{ " " + bioInfo.biography.firstAppearance }}</p>
 
-      <p class="mt-4 mb-2 font-bold text-lg">Power Stats</p>
+      <p class="mt-4 mb-2 font-bold text-xl text-green-600">Power Stats</p>
 
       <div class="relative py-1 w-3/5">
         Intelligence
@@ -113,33 +133,39 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from "vue";
 import Loading from "../util/Loading.vue";
-export default {
+
+export default defineComponent({
   name: "SuperHeroDetailsPage",
   components: { Loading },
   data() {
     return {
-      loading: false,
-      errors: false,
-      bioInfo: {},
+      loading: false as boolean,
+      errors: false as boolean,
+      //look into defining bioInfo via type definitions
+      // eslint-disable-next-line
+      bioInfo: {} as any,
     };
   },
   async mounted() {
-    this.loading = true;
+    document.body.style.backgroundColor = "#E5E4E2";
     try {
+      this.loading = true;
       const response = await fetch(
         `https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/id/${this.$route.params.id}.json`
       );
       if (response.ok) {
         this.bioInfo = await response.json();
         this.loading = false;
-        console.log(this.bioInfo);
+        document.title = this.bioInfo.name;
       }
     } catch (error) {
       console.log("Something went wrong:", error);
       this.errors = true;
+      this.loading = false;
     }
   },
-};
+});
 </script>

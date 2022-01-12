@@ -12,7 +12,7 @@
   </div>
 
   <div
-    class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full md:w-4/5 mr-auto ml-auto"
+    class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full md:w-4/5 mr-auto ml-auto mb-8"
   >
     <div v-if="loading" class="col-span-3">
       <p class="text-center font-bold text-3xl">Loading... Please wait...</p>
@@ -26,13 +26,16 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from "vue";
+import { Superhero, State } from "../../init";
 import SuperHeroCard from "./SuperHeroCard.vue";
 import Loading from "../util/Loading.vue";
-export default {
+
+export default defineComponent({
   name: "SuperHeroDashboard",
   components: { Loading, SuperHeroCard },
-  data() {
+  data(): State {
     return {
       errors: false,
       heroSearch: "",
@@ -41,8 +44,9 @@ export default {
       superheros: [],
     };
   },
-  async mounted() {
+  async mounted(): Promise<void> {
     document.body.style.backgroundColor = "#E5E4E2";
+    document.title = "The Marvel Cinematic Universe";
     this.loading = true;
     try {
       const response = await fetch(
@@ -55,16 +59,17 @@ export default {
     } catch (error) {
       console.log("Something went wrong:", error);
       this.errors = true;
+      this.loading = false;
     }
     this.incrementPointerBy15();
   },
   methods: {
-    incrementPointerBy15() {
+    incrementPointerBy15(): void {
       window.onscroll = () => {
         // amount of pixels for the entire height of the document + the current amount of pixels positioned from the top of the document === the number of pixels for the height of the screen
         let bottomOfWindow =
-          document.documentElement.scrollTop + window.innerHeight ===
-          document.documentElement.offsetHeight;
+          document.documentElement.scrollTop + window.innerHeight >
+          document.documentElement.offsetHeight - 200;
         if (bottomOfWindow) {
           this.pointer = this.pointer + 15;
         }
@@ -72,14 +77,14 @@ export default {
     },
   },
   computed: {
-    renderedSuperHeros() {
+    renderedSuperHeros(): Superhero[] {
       if (this.heroSearch) {
-        return this.superheros.filter((hero) =>
+        return this.superheros.filter((hero: Superhero) =>
           hero.name.toLowerCase().includes(this.heroSearch.toLowerCase())
         );
       }
       return this.superheros.slice(0, this.pointer);
     },
   },
-};
+});
 </script>
